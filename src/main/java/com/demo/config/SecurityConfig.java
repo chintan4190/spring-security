@@ -1,5 +1,7 @@
 package com.demo.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,9 +13,6 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -30,6 +29,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/favicon.ico").permitAll()
                 // allow access to v1 endpoints, still subject to authorization check defined on the method level
                 .antMatchers("/v1/**").permitAll()
+            //    .and()
+              //  .sessionManagement().sessionAuthenticationStrategy(SessionAuthenticationStrategy.)
                 // deny all other endpoints
                 .anyRequest().denyAll()
         ;
@@ -50,22 +51,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @return
      */
     @Bean(name = "siteminderFilter")
-    public RequestHeaderAuthenticationFilter siteminderFilter() {
-        RequestHeaderAuthenticationFilter requestHeaderAuthenticationFilter = new RequestHeaderAuthenticationFilter();
-
-        // set the header name which provides principal information
-        requestHeaderAuthenticationFilter.setPrincipalRequestHeader("x-actor-id");
-
-        // set the header name which provides credential information
-        requestHeaderAuthenticationFilter.setCredentialsRequestHeader("x-grantor-id");
-
-        requestHeaderAuthenticationFilter.setAuthenticationManager(authenticationManager());
-
-        // do not throw exception when header is not present.
-        // one use case is for actuator endpoints and static assets where security headers are not required.
-        requestHeaderAuthenticationFilter.setExceptionIfHeaderMissing(false);
-
-        return requestHeaderAuthenticationFilter;
+    public RequestHeaderAuthenticationFilter siteminderFilter() throws Exception {
+        CustomRequestHeaderFilter customRequestHeaderFilter = new CustomRequestHeaderFilter();
+        customRequestHeaderFilter.setAuthenticationManager(super.authenticationManager());
+        return customRequestHeaderFilter;
     }
 
     @Bean

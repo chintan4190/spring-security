@@ -25,11 +25,12 @@ public class AuthorizationUserDetailsService implements AuthenticationUserDetail
      */
     @Override
     public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token) throws UsernameNotFoundException {
-        final String principal = (String)token.getPrincipal();
-        final String credential = (String)token.getCredentials();
+       //Apple
+        final User principal = (User)token.getPrincipal();
+        //final String credential = (String)token.getCredentials();
 
         // TODO this is only for illustration purpose. Should retrieve user from data store and determine user roles
-        if (principal.equals("joe")) {
+        if (principal.getUsername().equals("chintan")) {
             // TODO some user lookup and then create User object with roles
 
             return new User("admin-user", "", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
